@@ -458,8 +458,7 @@ function statusBadge(it) {
       return '<span class="badge badge-idle">Ready</span>';
     case 'queued':
       return '<span class="badge badge-idle">Queued</span>';
-    case 'processing':
-      return '<span class="badge badge-work"><span class="spinner"></span>Compressing…</span>';
+    // 'processing' has no corner badge — the thumbnail loading overlay owns that state.
     case 'error':
       return `<span class="badge badge-err">Error</span>`;
     case 'kept':
@@ -503,51 +502,107 @@ function dimsLine(it) {
   return src;
 }
 
+/**
+ * Uppercase output-format label for the thumbnail badge (e.g. `WEBP`, `PNG`, `JPG`).
+ * Uses the result's filename once compressed (what actually downloads), else the source.
+ */
+function formatLabel(it) {
+  const name = it.result ? it.result.name : it.name;
+  const dot = name.lastIndexOf('.');
+  let ext = dot >= 0 ? name.slice(dot + 1).toLowerCase() : '';
+  if (ext === 'jpeg') ext = 'jpg';
+  return ext ? ext.toUpperCase() : it.mime === 'image/png' ? 'PNG' : 'JPG';
+}
+
+/**
+ * Render a filename as a truncatable base + a pinned extension, so the extension
+ * stays visible even when the basename is clipped (e.g. `mountain-vista-….jpg`).
+ */
+function nameHtml(name) {
+  const dot = name.lastIndexOf('.');
+  if (dot <= 0 || dot === name.length - 1) {
+    return `<span class="rn-base">${escapeHtml(name)}</span>`;
+  }
+  return `<span class="rn-base">${escapeHtml(name.slice(0, dot))}</span><span class="rn-ext">${escapeHtml(
+    name.slice(dot)
+  )}</span>`;
+}
+
 function itemMarkup(it) {
   const r = it.result;
   const sizeLine = r
     ? `${formatBytes(r.originalSize)} <span class="row-arrow">→</span> <strong>${formatBytes(r.newSize)}</strong>`
     : `${formatBytes(it.size)}`;
   const dims = dimsLine(it);
-  const meta =
-    it.status === 'error'
-      ? `<span class="row-err">${escapeHtml(it.error || 'Failed')}</span>`
-      : r
-        ? `<span class="row-method">${escapeHtml(r.method)}</span>`
-        : `<span class="row-method">${it.mime === 'image/png' ? 'PNG' : 'JPEG'}</span>`;
   const done = it.status === 'done' || it.status === 'kept';
+  const pending = it.status === 'pending';
+  const processing = it.status === 'processing';
   const thumb = it.thumbUrl ? `<img class="row-thumb" src="${it.thumbUrl}" alt="" />` : '';
-  const removable = it.status === 'pending';
+  // Top-right of the thumbnail: a remove button while pending, otherwise the
+  // status / savings badge. The format badge sits top-left. While processing the
+  // corner stays empty — the centered loading overlay owns the thumbnail.
+  const corner = pending
+    ? `<button class="fi-remove" data-remove="${it.id}" title="Remove" aria-label="Remove ${escapeHtml(
+        it.name
+      )}">&times;</button>`
+    : processing
+      ? ''
+      : statusBadge(it);
+  // Compressing — animated overlay on the image only; the info section is untouched.
+  const loading = processing
+    ? `<div class="thumb-loading" role="status" aria-label="Compressing">
+         <span class="tl-spin">
+           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <path d="M4 4 L9 9 M9 5 V9 H5" />
+             <path d="M20 20 L15 15 M15 19 V15 H19" />
+             <path d="M20 4 L15 9 M15 5 V9 H19" />
+             <path d="M4 20 L9 15 M9 19 V15 H5" />
+           </svg>
+         </span>
+       </div>`
+    : '';
+  // Once compressed, show the output filename (matches the format badge and what downloads).
+  const displayName = r ? r.name : it.name;
+  const infoLine =
+    it.status === 'error'
+      ? `<div class="row-err">${escapeHtml(it.error || 'Failed')}</div>`
+      : dims
+        ? `<div class="row-dims">${dims}</div>`
+        : '';
+  // Ratio bar — fill is the % saved, so a fuller bar means more compression.
+  let ratioBar = '';
+  if (done && r) {
+    const saved = savedPct(r.originalSize, r.newSize);
+    const title = saved > 0 ? `Compressed ${saved}%` : 'No size reduction';
+    ratioBar = `<div class="row-bar" title="${title}"><span style="width:${saved}%"></span></div>`;
+  }
   return `
-    ${
-      removable
-        ? `<button class="fi-remove" data-remove="${it.id}" title="Remove" aria-label="Remove ${escapeHtml(
-            it.name
-          )}">&times;</button>`
-        : ''
-    }
-    <div class="fi-thumb">${thumb}</div>
-    <div class="fi-info">
-      <div class="row-name" title="${escapeHtml(it.name)}">${escapeHtml(it.name)}</div>
-      ${dims ? `<div class="row-dims">${dims}</div>` : ''}
-      <div class="row-size">${sizeLine}</div>
-      <div class="fi-meta">${meta}</div>
-      <div class="fi-foot">${statusBadge(it)}</div>
+    <div class="fi-thumb${processing ? ' is-loading' : ''}">
+      ${thumb}
+      <span class="fmt-badge">${formatLabel(it)}</span>
+      ${loading}
+      ${corner}
     </div>
-    ${
-      done
-        ? `<div class="fi-actions">
-             <button class="act-btn" data-preview="${it.id}">
-               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-               Preview
-             </button>
-             <button class="act-btn act-btn-dl" data-download="${it.id}">
-               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10m0 0 4-4m-4 4-4-4M6 20h12"/></svg>
-               Download
-             </button>
-           </div>`
-        : ''
-    }`;
+    <div class="fi-info">
+      <div class="row-name" title="${escapeHtml(displayName)}">${nameHtml(displayName)}</div>
+      <div class="row-size">${sizeLine}</div>
+      ${ratioBar}
+      ${infoLine}
+      ${
+        done
+          ? `<div class="fi-actions">
+               <button class="act-btn" data-preview="${it.id}">
+                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                 Preview
+               </button>
+               <button class="act-btn act-btn-dl" data-download="${it.id}">
+                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10m0 0 4-4m-4 4-4-4M6 20h12"/></svg>
+                 Download
+               </button>
+             </div>`
+          : ''
+      }
+    </div>`;
 }
 
 function render() {
