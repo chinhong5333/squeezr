@@ -22,3 +22,4 @@ Thumbs.db
 # Internal working docs (kept local, not published)
 _IMPLEMENTATION_*.md
 proposal.md
+.vercel
