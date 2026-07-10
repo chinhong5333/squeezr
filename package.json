@@ -1,0 +1,26 @@
+{
+  "name": "image-squish",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Client-side PNG/JPEG image compressor with optional WebP. Fully in-browser, PWA.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@jsquash/jpeg": "^1.6.0",
+    "@jsquash/oxipng": "^2.3.0",
+    "@jsquash/webp": "^1.5.0",
+    "imagequant": "^0.1.2",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "vite": "^7.3.3",
+    "vite-plugin-pwa": "^1.3.0",
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.6.0"
+  }
+}

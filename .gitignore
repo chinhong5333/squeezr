@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dev-dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env
+.env
+.env.*
+
+# Internal working docs (kept local, not published)
+_IMPLEMENTATION_*.md
+proposal.md
