@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "squeezr-phi.vercel.app"
+        }
+      ],
+      "destination": "https://squeezr.xiaowhitebear.dpdns.org/:path*",
+      "permanent": true
+    }
+  ]
+}

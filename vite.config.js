@@ -1,7 +1,69 @@
 import { defineConfig } from 'vite';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import wasm from 'vite-plugin-wasm';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import { VitePWA } from 'vite-plugin-pwa';
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+const contentPageSlugs = [
+  'compress-png',
+  'compress-jpeg',
+  'convert-to-webp',
+  'privacy',
+  'how-it-works',
+];
+
+/**
+ * Keep content-page sources grouped under `pages/` without exposing that internal
+ * folder in development or production URLs.
+ *
+ * Source: pages/compress-png.html
+ * Public: /compress-png/
+ */
+function contentPageRoutes() {
+  return {
+    name: 'squeezr-content-page-routes',
+    enforce: 'post',
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (!request.url) return next();
+
+        const [pathname, query = ''] = request.url.split('?', 2);
+        const slug = contentPageSlugs.find(
+          (candidate) => pathname === `/${candidate}` || pathname === `/${candidate}/`
+        );
+
+        if (!slug) return next();
+
+        if (pathname === `/${slug}`) {
+          response.statusCode = 308;
+          response.setHeader('Location', `/${slug}/${query ? `?${query}` : ''}`);
+          response.end();
+          return;
+        }
+
+        request.url = `/pages/${slug}.html${query ? `?${query}` : ''}`;
+        next();
+      });
+    },
+    generateBundle(_options, bundle) {
+      for (const slug of contentPageSlugs) {
+        const sourceFile = `pages/${slug}.html`;
+        const publicFile = `${slug}/index.html`;
+        const pageAsset = bundle[sourceFile];
+
+        if (!pageAsset || pageAsset.type !== 'asset') {
+          throw new Error(`Missing generated content page: ${sourceFile}`);
+        }
+
+        delete bundle[sourceFile];
+        pageAsset.fileName = publicFile;
+        bundle[publicFile] = pageAsset;
+      }
+    },
+  };
+}
 
 // The jSquash codecs resolve their .wasm via `new URL('file.wasm', import.meta.url)`,
 // which Vite handles natively — but only if they are NOT pre-bundled by esbuild
@@ -19,11 +81,14 @@ export default defineConfig({
   // Relative base so the built app works from a subpath (GitHub Pages) or file://-style hosts.
   base: './',
   plugins: [
+    contentPageRoutes(),
     wasm(),
     topLevelAwait(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      // Multi-page routes cannot use a relative registerSW.js injection. The
+      // virtual module in each JS entry registers the single root service worker.
+      injectRegister: null,
       includeAssets: ['icon.svg'],
       manifest: {
         name: 'Squeezr',
@@ -54,5 +119,15 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: codecPackages,
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(projectRoot, 'index.html'),
+        ...Object.fromEntries(
+          contentPageSlugs.map((slug) => [slug, resolve(projectRoot, `pages/${slug}.html`)])
+        ),
+      },
+    },
   },
 });

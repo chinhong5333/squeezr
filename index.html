@@ -5,39 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
     <meta name="theme-color" content="#ffffff" />
-    <title>Squeezr</title>
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <title>Private Image Compressor for PNG &amp; JPEG | Squeezr</title>
     <meta
       name="description"
-      content="Squeezr compresses PNG & JPEG images right in your browser — private & offline, nothing leaves your device. 80–90% smaller via pngquant + oxipng and MozJPEG, then download a ZIP."
+      content="Compress PNG and JPEG images locally in your browser—no uploads or tracking. Resize, convert to WebP, preview quality, and download files or a ZIP."
     />
 
-    <link rel="canonical" href="https://squeezr-phi.vercel.app/" />
+    <link rel="canonical" href="https://squeezr.xiaowhitebear.dpdns.org/" />
 
     <!-- Open Graph / social preview. Scrapers (Facebook, WhatsApp, Twitter/X, Google Chat,
          LinkedIn) require ABSOLUTE https URLs — update the domain below if you change hosts. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Squeezr" />
-    <meta property="og:title" content="Squeezr — compress images in your browser" />
+    <meta property="og:title" content="Private PNG &amp; JPEG image compressor | Squeezr" />
     <meta
       property="og:description"
-      content="Effortless PNG & JPEG compression — fast, fully private, and offline."
+      content="Compress PNG and JPEG images locally—no uploads or tracking. Resize, convert to WebP, preview quality, and download a ZIP."
     />
-    <meta property="og:url" content="https://squeezr-phi.vercel.app/" />
-    <meta property="og:image" content="https://squeezr-phi.vercel.app/og.png" />
-    <meta property="og:image:secure_url" content="https://squeezr-phi.vercel.app/og.png" />
+    <meta property="og:url" content="https://squeezr.xiaowhitebear.dpdns.org/" />
+    <meta property="og:image" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
+    <meta property="og:image:secure_url" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="2400" />
     <meta property="og:image:height" content="1260" />
     <meta property="og:image:alt" content="Squeezr — in-browser PNG/JPEG compressor" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Squeezr — compress images in your browser" />
+    <meta name="twitter:title" content="Private PNG &amp; JPEG image compressor | Squeezr" />
     <meta
       name="twitter:description"
-      content="Effortless PNG & JPEG compression — fast, fully private, and offline."
+      content="Compress PNG and JPEG images locally—no uploads or tracking. Resize, convert to WebP, preview quality, and download a ZIP."
     />
-    <meta name="twitter:image" content="https://squeezr-phi.vercel.app/og.png" />
+    <meta name="twitter:image" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
     <meta name="twitter:image:alt" content="Squeezr — in-browser PNG/JPEG compressor" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://squeezr.xiaowhitebear.dpdns.org/#website",
+            "url": "https://squeezr.xiaowhitebear.dpdns.org/",
+            "name": "Squeezr",
+            "description": "A private, browser-based PNG and JPEG image compressor with optional WebP output.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://squeezr.xiaowhitebear.dpdns.org/#app",
+            "url": "https://squeezr.xiaowhitebear.dpdns.org/",
+            "name": "Squeezr",
+            "description": "Compress, resize, preview, and download PNG and JPEG images without uploading them.",
+            "image": "https://squeezr.xiaowhitebear.dpdns.org/og.png",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Any operating system with a supported modern browser",
+            "browserRequirements": "Requires WebAssembly, Web Workers, OffscreenCanvas, and createImageBitmap.",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": 0
+            },
+            "featureList": [
+              "Local PNG and JPEG compression",
+              "Optional WebP conversion",
+              "Batch ZIP download",
+              "Image resizing",
+              "Before-and-after preview",
+              "Offline-capable progressive web app"
+            ]
+          }
+        ]
+      }
+    </script>
     <script>
       // Apply saved theme before first paint to avoid a flash. Default: light.
       try {
@@ -84,7 +124,7 @@
           class="dropzone"
           tabindex="0"
           role="button"
-          aria-label="Add images: click to browse, drag &amp; drop, or paste (Ctrl+V)"
+          aria-label="Drop images here or click to browse; you can also paste with Ctrl+V"
         >
           <input id="file-input" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" multiple hidden />
           <div class="dz-inner">
@@ -188,6 +228,13 @@
           </svg>
           <span>View on GitHub</span>
         </a>
+        <nav class="resource-links" aria-label="Image compression resources">
+          <a href="./compress-png/">Compress PNG</a>
+          <a href="./compress-jpeg/">Compress JPEG</a>
+          <a href="./convert-to-webp/">Convert to WebP</a>
+          <a href="./privacy/">Privacy</a>
+          <a href="./how-it-works/">How it works</a>
+        </nav>
       </footer>
     </div>
 

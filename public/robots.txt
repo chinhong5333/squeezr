@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://squeezr.xiaowhitebear.dpdns.org/sitemap.xml

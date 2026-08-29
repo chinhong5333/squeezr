@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <title>How Squeezr Compresses Images in the Browser</title>
+    <meta
+      name="description"
+      content="See how Squeezr decodes, resizes, and compresses PNG and JPEG images locally with Web Workers, pngquant, oxipng, MozJPEG, WebP, and safety guards."
+    />
+    <link rel="canonical" href="https://squeezr.xiaowhitebear.dpdns.org/how-it-works/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Squeezr" />
+    <meta property="og:title" content="How Squeezr compresses images in the browser" />
+    <meta
+      property="og:description"
+      content="A precise walkthrough of the local PNG, JPEG, WebP, resize, memory, and fallback pipeline."
+    />
+    <meta property="og:url" content="https://squeezr.xiaowhitebear.dpdns.org/how-it-works/" />
+    <meta property="og:image" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:alt" content="How the Squeezr image-compression pipeline works" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How Squeezr compresses images in the browser" />
+    <meta
+      name="twitter:description"
+      content="A precise walkthrough of the local PNG, JPEG, WebP, resize, memory, and fallback pipeline."
+    />
+    <meta name="twitter:image" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
+    <meta name="twitter:image:alt" content="How the Squeezr image-compression pipeline works" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://squeezr.xiaowhitebear.dpdns.org/how-it-works/#webpage",
+        "url": "https://squeezr.xiaowhitebear.dpdns.org/how-it-works/",
+        "name": "How Squeezr Compresses Images in the Browser",
+        "description": "A technical explanation of Squeezr's local PNG, JPEG, WebP, resize, and fallback pipeline.",
+        "isPartOf": { "@id": "https://squeezr.xiaowhitebear.dpdns.org/#website" },
+        "about": { "@id": "https://squeezr.xiaowhitebear.dpdns.org/#app" },
+        "inLanguage": "en",
+        "dateModified": "2026-08-29"
+      }
+    </script>
+    <script>
+      try {
+        var t = localStorage.getItem('squeezr-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="content-page">
+    <div class="bg-mesh" aria-hidden="true"></div>
+
+    <div id="app" class="content-app">
+      <header class="site-header seo-site-header">
+        <div class="header-top">
+          <a class="brand brand-link" href="../" aria-label="Squeezr home">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4 L9 9 M9 5 V9 H5" />
+                <path d="M20 20 L15 15 M15 19 V15 H19" />
+                <path d="M20 4 L15 9 M15 5 V9 H19" />
+                <path d="M4 20 L9 15 M9 19 V15 H5" />
+              </svg>
+            </span>
+            <span class="brand-wordmark">Squeezr</span>
+          </a>
+          <div class="header-actions">
+            <button id="theme-btn" class="theme-btn" type="button" aria-label="Switch to dark theme">
+              <svg class="i-dark" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
+              </svg>
+              <svg class="i-light" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M4 12H2m20 0h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <a class="content-back" href="../" aria-label="Back to Squeezr homepage">&lt;&lt; Back</a>
+        <div class="seo-page-heading">
+          <h1 class="seo-page-title">How Squeezr compresses an image</h1>
+          <p class="seo-page-lede">
+            One browser tab, one Web Worker, and three encoding paths. The image never needs a
+            backend to reach pngquant, oxipng, MozJPEG, or libwebp.
+          </p>
+        </div>
+      </header>
+
+      <main>
+        <article class="seo-document">
+          <h2>The path through the browser</h2>
+          <ol>
+            <li>The main thread accepts a PNG or JPEG from drop, file picker, or clipboard paste.</li>
+            <li>A module Web Worker receives the file bytes, MIME type, filename, resize percentage, and WebP choice.</li>
+            <li><code>createImageBitmap</code> decodes the source; <code>OffscreenCanvas</code> produces RGBA pixel data.</li>
+            <li>The worker selects the PNG, JPEG, or WebP encoder path.</li>
+            <li>The main thread receives a local output buffer, renders the result, and prepares downloads.</li>
+          </ol>
+          <p>
+            The worker boundary keeps codec work away from the interface thread. Adding files,
+            toggling options, and reading progress remain responsive while an encoder is busy.
+          </p>
+
+          <h2>PNG: palette reduction, then lossless optimisation</h2>
+          <p>
+            PNG follows a two-stage path. Libimagequant first reduces the colour palette with a
+            minimum quality of 65, target quality of 80, and speed setting 4. The resulting PNG
+            then passes through oxipng at optimisation level 2 with alpha optimisation enabled.
+          </p>
+          <p>
+            If libimagequant cannot satisfy the quality floor, Squeezr skips palette reduction.
+            The source PNG receives the lossless oxipng pass instead. When resizing is enabled,
+            the resized pixels are encoded to PNG before that fallback because the original bytes
+            have the wrong dimensions.
+          </p>
+
+          <h2>JPEG: MozJPEG at a fixed quality</h2>
+          <p>
+            JPEG and JPG input uses the MozJPEG encoder at quality 80. There is no automatic
+            per-file quality search and no visible quality slider. That fixed contract keeps the
+            workflow predictable: add a photograph, encode it once, inspect it, and keep the
+            source if the delivery copy is not suitable.
+          </p>
+
+          <h2>WebP: an explicit format change</h2>
+          <p>
+            When WebP is enabled, either PNG or JPEG pixel data goes to the libwebp encoder at
+            quality 80. The output extension changes to <code>.webp</code>. This is the only standard path
+            that changes the image format, and the interface makes that choice visible before
+            compression begins.
+          </p>
+
+          <h2>Resize happens before encoding</h2>
+          <p>
+            Resize scales both dimensions by the selected percentage, preserves aspect ratio,
+            and never upscales. The worker uses high-quality canvas smoothing before the encoder
+            sees the pixels. A resize is treated as an explicit output request, so the resized
+            file is returned even if its byte count happens to exceed the source.
+          </p>
+
+          <h2>The keep-original safeguard</h2>
+          <p>
+            With resize off, the worker compares encoded and original byte lengths. If the new
+            output is not smaller, it returns the original bytes and filename. This avoids
+            offering a larger file as a successful compression result.
+          </p>
+
+          <h2>Memory and batch limits</h2>
+          <p>
+            The main thread sends one file at a time and waits for the worker’s result before
+            advancing the queue. That sequential design limits peak codec memory. Source images
+            above 40 megapixels are rejected, and a batch can contain up to 20 supported files.
+          </p>
+          <p>
+            Codec modules are imported on first use and then reused. Thumbnails are separately
+            bounded to a maximum 400-pixel side so the result list does not keep full-size decoded
+            images for every item.
+          </p>
+
+          <h2>Verified project results</h2>
+          <dl class="benchmark-list">
+            <div class="benchmark-row">
+              <dt>Flat UI PNG, 900×600</dt>
+              <dd>35 KB → 3.0 KB</dd>
+              <dd class="benchmark-saving">91% smaller</dd>
+            </div>
+            <div class="benchmark-row">
+              <dt>Gradient-and-noise PNG, 700×500</dt>
+              <dd>753 KB → 173 KB</dd>
+              <dd class="benchmark-saving">77% smaller</dd>
+            </div>
+            <div class="benchmark-row">
+              <dt>Photographic JPEG</dt>
+              <dd>178 KB → 58 KB</dd>
+              <dd class="benchmark-saving">68% smaller</dd>
+            </div>
+            <div class="benchmark-row">
+              <dt>Gradient PNG to WebP</dt>
+              <dd>Quality 80</dd>
+              <dd class="benchmark-saving">99% smaller</dd>
+            </div>
+          </dl>
+          <p>
+            These values come from the project’s browser fixtures. They describe those inputs,
+            not every image. Compression ratio depends on dimensions, palette, noise, existing
+            optimisation, transparency, and the source encoder.
+          </p>
+
+          <h2>What the pipeline does not promise</h2>
+          <ul>
+            <li>Animated GIF, animated PNG, HEIC, SVG, AVIF, and RAW formats are not accepted.</li>
+            <li>Unusual colour profiles and exotic metadata are not an archival target.</li>
+            <li>Visual equivalence is subjective; the preview is part of the workflow.</li>
+            <li>The tool is experimental and should not replace the only copy of an important file.</li>
+          </ul>
+
+          <p class="seo-callout">
+            Ready to try a specific path? Open the <a href="../compress-png/">PNG compressor</a>,
+            <a href="../compress-jpeg/">JPEG compressor</a>, or
+            <a href="../convert-to-webp/">WebP converter</a>.
+          </p>
+        </article>
+      </main>
+
+      <footer class="site-footer">
+        <nav class="resource-links" aria-label="Image compression resources">
+          <a href="../compress-png/">Compress PNG</a>
+          <a href="../compress-jpeg/">Compress JPEG</a>
+          <a href="../convert-to-webp/">Convert to WebP</a>
+          <a href="../privacy/">Privacy</a>
+          <a href="./" aria-current="page">How it works</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/content.js"></script>
+  </body>
+</html>

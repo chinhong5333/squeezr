@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <title>Compress PNG Online Privately — No Upload | Squeezr</title>
+    <meta
+      name="description"
+      content="Compress PNG files privately in your browser. Preserve transparency, resize optional images, preview quality, and download files or a ZIP without uploading."
+    />
+    <link rel="canonical" href="https://squeezr.xiaowhitebear.dpdns.org/compress-png/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Squeezr" />
+    <meta property="og:title" content="Compress PNG files privately | Squeezr" />
+    <meta
+      property="og:description"
+      content="Reduce PNG file size locally with pngquant and oxipng. Nothing is uploaded."
+    />
+    <meta property="og:url" content="https://squeezr.xiaowhitebear.dpdns.org/compress-png/" />
+    <meta property="og:image" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:alt" content="Squeezr private PNG compressor" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Compress PNG files privately | Squeezr" />
+    <meta
+      name="twitter:description"
+      content="Reduce PNG file size locally with pngquant and oxipng. Nothing is uploaded."
+    />
+    <meta name="twitter:image" content="https://squeezr.xiaowhitebear.dpdns.org/og.png" />
+    <meta name="twitter:image:alt" content="Squeezr private PNG compressor" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://squeezr.xiaowhitebear.dpdns.org/compress-png/#webpage",
+            "url": "https://squeezr.xiaowhitebear.dpdns.org/compress-png/",
+            "name": "Compress PNG Online Privately — No Upload",
+            "description": "Compress PNG files locally with pngquant and oxipng while preserving transparency.",
+            "isPartOf": { "@id": "https://squeezr.xiaowhitebear.dpdns.org/#website" },
+            "about": { "@id": "https://squeezr.xiaowhitebear.dpdns.org/#app" },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://squeezr.xiaowhitebear.dpdns.org/#app",
+            "name": "Squeezr",
+            "url": "https://squeezr.xiaowhitebear.dpdns.org/",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Any operating system with a supported modern browser",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": 0 }
+          }
+        ]
+      }
+    </script>
+    <script>
+      try {
+        var t = localStorage.getItem('squeezr-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="content-page">
+    <div class="bg-mesh" aria-hidden="true"></div>
+
+    <div id="app">
+      <header class="site-header seo-site-header">
+        <div class="header-top">
+          <a class="brand brand-link" href="../" aria-label="Squeezr home">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4 L9 9 M9 5 V9 H5" />
+                <path d="M20 20 L15 15 M15 19 V15 H19" />
+                <path d="M20 4 L15 9 M15 5 V9 H19" />
+                <path d="M4 20 L9 15 M9 19 V15 H5" />
+              </svg>
+            </span>
+            <span class="brand-wordmark">Squeezr</span>
+          </a>
+          <div class="header-actions">
+            <button id="theme-btn" class="theme-btn" type="button" aria-label="Switch to dark theme">
+              <svg class="i-dark" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
+              </svg>
+              <svg class="i-light" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2m0 16v2M4 12H2m20 0h-2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <a class="content-back" href="../" aria-label="Back to Squeezr homepage">&lt;&lt; Back</a>
+        <div class="seo-page-heading">
+          <h1 class="seo-page-title">Compress PNG files in your browser</h1>
+          <p class="seo-page-lede">
+            Reduce screenshots, UI exports, logos, and transparent graphics without sending
+            them to a server. Squeezr runs pngquant and oxipng locally on your device.
+          </p>
+        </div>
+      </header>
+
+      <main>
+        <article class="seo-document">
+          <h2>What happens to a PNG</h2>
+          <p>
+            Squeezr decodes the image inside a Web Worker, reduces its colour palette with
+            libimagequant, and then runs a lossless oxipng pass. The target quality is 80 with
+            a quality floor of 65. If that floor cannot be met, the worker skips palette
+            reduction and uses the lossless pass instead.
+          </p>
+          <p>
+            The output remains a PNG unless you turn on WebP. Transparent pixels stay in the
+            pixel pipeline, and the before-and-after preview lets you inspect important edges,
+            text, and alpha transitions before downloading.
+          </p>
+
+          <h2>How to compress a PNG</h2>
+          <ol>
+            <li>Drop PNG files onto the compressor, choose them from disk, or paste a screenshot.</li>
+            <li>Leave resize off to preserve dimensions, or choose a smaller percentage.</li>
+            <li>Press Compress, inspect the result, then download one file or the complete ZIP.</li>
+          </ol>
+
+          <h2>When PNG is the right format</h2>
+          <p>
+            Keep PNG for interface screenshots, diagrams, icons, logos, line art, and graphics
+            that need transparency or crisp edges. Photographs usually compress more efficiently
+            as JPEG or WebP because they contain continuous colour and texture rather than a
+            limited palette.
+          </p>
+          <p>
+            If a photo was saved as PNG, try <a href="../convert-to-webp/">WebP output</a> and
+            compare it visually. If the image must remain widely editable as PNG, leave the
+            format toggle off.
+          </p>
+
+          <h2>Measured on the project fixtures</h2>
+          <dl class="benchmark-list">
+            <div class="benchmark-row">
+              <dt>Flat UI PNG, 900×600</dt>
+              <dd>35 KB → 3.0 KB</dd>
+              <dd class="benchmark-saving">91% smaller</dd>
+            </div>
+            <div class="benchmark-row">
+              <dt>Gradient-and-noise PNG, 700×500</dt>
+              <dd>753 KB → 173 KB</dd>
+              <dd class="benchmark-saving">77% smaller</dd>
+            </div>
+          </dl>
+          <p>
+            These are real project test fixtures, not guaranteed ratios. Savings depend on the
+            image’s colours, dimensions, existing optimisation, transparency, and visual detail.
+          </p>
+
+          <h2>Privacy and safeguards</h2>
+          <p>
+            Image bytes and filenames stay in the browser. Files are processed sequentially to
+            limit peak memory, and source images above 40 megapixels are rejected before encoding.
+            When resize is off, Squeezr returns the original file if the compressed result would
+            be larger.
+          </p>
+          <p class="seo-callout">
+            Squeezr is an experimental personal tool. Keep the original file and verify any
+            important output before replacing an archival or production asset.
+          </p>
+
+          <h2>PNG compression questions</h2>
+          <h3>Is the PNG compression lossless?</h3>
+          <p>
+            The palette-reduction stage is lossy, although it is designed to preserve visual
+            quality. The oxipng stage is lossless. If the configured quality floor cannot be met,
+            Squeezr falls back to the lossless-only path.
+          </p>
+
+          <h3>Are my images uploaded?</h3>
+          <p>
+            No. Compression happens through browser APIs, WebAssembly codecs, and a local Web
+            Worker. Read the full <a href="../privacy/">privacy explanation</a> for the exact
+            boundary between initial app assets and your image data.
+          </p>
+
+          <h3>Can I compress a batch?</h3>
+          <p>
+            Yes. Add up to 20 PNG or JPEG files, process them sequentially, and download the
+            completed batch as a timestamped ZIP.
+          </p>
+        </article>
+      </main>
+
+      <footer class="site-footer">
+        <nav class="resource-links" aria-label="Image compression resources">
+          <a href="./" aria-current="page">Compress PNG</a>
+          <a href="../compress-jpeg/">Compress JPEG</a>
+          <a href="../convert-to-webp/">Convert to WebP</a>
+          <a href="../privacy/">Privacy</a>
+          <a href="../how-it-works/">How it works</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/content.js"></script>
+  </body>
+</html>

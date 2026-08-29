@@ -1,6 +1,9 @@
 import JSZip from 'jszip';
 import '@fontsource-variable/inter';
 import './style.css';
+import { registerPwa } from './register-pwa.js';
+
+registerPwa();
 
 // Reload once when a *new* service worker takes control after a redeploy, so the
 // still-running old page never lazily imports a hashed codec chunk the new SW has

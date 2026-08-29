@@ -6,7 +6,7 @@ Squeezr shrinks your images using real production-grade codecs (pngquant + oxipn
 and optional WebP) **entirely on your device**. Nothing is uploaded. No account, no server,
 no tracking. Drop images in, click Compress, download a ZIP.
 
-**🔗 Live demo: [squeezr-phi.vercel.app](https://squeezr-phi.vercel.app)**
+**🔗 Live demo: [squeezr.xiaowhitebear.dpdns.org](https://squeezr.xiaowhitebear.dpdns.org/)**
 
 > ### ⚠️ Beta / Experimental
 >
