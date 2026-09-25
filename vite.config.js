@@ -108,6 +108,7 @@ export default defineConfig({
         // Precache the whole app shell + every codec .wasm so repeat visits load
         // instantly and the tool works fully offline.
         globPatterns: ['**/*.{js,css,html,svg,wasm,woff2}'],
+        navigateFallbackDenylist: [/^\/(?:sitemap\.xml|robots\.txt)(?:\?.*)?$/],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
       },
     }),
